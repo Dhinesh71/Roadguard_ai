@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+supabase
+ultralytics
+python-multipart
+pydantic
+numpy
+scikit-learn
+pillow
+python-dotenv
+PyJWT
+requests
