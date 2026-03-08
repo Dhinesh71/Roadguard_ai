@@ -94,7 +94,7 @@ If you wish to stop using the mock endpoints and switch to real live data, you m
 
 1. Go to [Supabase](https://supabase.com/) and create a new project.
 2. Go to the SQL Editor in your Supabase dashboard.
-3. Open the `E:\srm-online-hackathon\db_schema.sql` file provided in this repository.
+3. Open the `roadguard-backend/db_schema.sql` file provided in this repository.
 4. Copy all the contents of `db_schema.sql` and run it in the Supabase SQL editor. This will instantly build the `profiles`, `hazard_reports`, `repair_records`, and `leaderboard` tables.
 
 ---

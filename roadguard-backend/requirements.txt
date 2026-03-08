@@ -6,6 +6,10 @@ python-multipart
 pydantic
 numpy
 scikit-learn
+xgboost
+lightgbm
+joblib
+scipy
 pillow
 python-dotenv
 PyJWT

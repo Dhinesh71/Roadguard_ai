@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, CheckCircle } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -12,6 +13,13 @@ const Login = () => {
     const [otp, setOtp] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { user, profile } = useAuth(); // Import useAuth hook at the top!
+
+    useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();

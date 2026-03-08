@@ -23,23 +23,18 @@ const Navbar = () => {
                             <Trophy size={18} /> Leaderboard
                         </Link>
 
-                        {['Moderator', 'Municipal Officer', 'Super Admin'].includes(profile.role) && (
-                            <Link to="/admin" className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-orange)' }}>
-                                Admin
-                            </Link>
-                        )}
 
                         <Link to="/report" className="btn btn-accent">
                             <AlertTriangle size={18} /> Report Hazard
                         </Link>
 
                         <Link to="/profile" className="btn btn-outline" style={{ background: 'transparent', borderColor: '#FFFFFF', color: '#FFFFFF', padding: '0.5rem 1rem' }}>
-                            {profile.profile_photo ? (
+                            {profile?.profile_photo ? (
                                 <img src={profile.profile_photo} alt="Profile" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
                             ) : (
                                 <User size={18} />
                             )}
-                            {profile.name.split(' ')[0]}
+                            {profile?.name ? profile.name.split(' ')[0] : 'User'}
                         </Link>
 
                         <button onClick={signOut} className="btn" style={{ background: 'transparent', color: 'var(--text-muted)', padding: '0.25rem' }}>

@@ -1,79 +1,72 @@
-# RoadGuard AI Setup and Run Instructions
+# RoadGuard AI
 
-This guide covers everything needed to run the Smart Road Hazard Intelligence System.
+Welcome to the **Smart Road Hazard Intelligence System**. This platform uses a decoupled architecture with a React (Vite) frontend and a Python (FastAPI + YOLOv8) backend.
 
-## Prerequisites
-- Node.js (for React frontend)
-- Python 3.8+ (for FastAPI backend)
-- API Keys: Supabase URL, Supabase Auth Key, Google Maps API Key
+## 🛠️ Prerequisites
 
----
-
-## 1. Starting the Backend (FastAPI + YOLOv8)
-
-Open a new terminal window or PowerShell and navigate to the backend folder:
-```powershell
-cd E:\srm-online-hackathon\roadguard-backend
-```
-
-**Step 1: Create and Activate Virtual Environment**
-If you haven't already:
-```powershell
-# Create it
-python -m venv venv
-
-# Activate it (Windows)
-.\venv\Scripts\Activate.ps1
-```
-
-**Step 2: Install Requirements**
-```powershell
-pip install -r requirements.txt
-```
-
-**Step 3: Setup Variables**
-Open `.env` in `roadguard-backend` and insert your Supabase details (Required for DB actions to work in production, otherwise it uses mocked responses):
-```env
-SUPABASE_URL="https://your-project.supabase.co"
-SUPABASE_KEY="your-anon-key"
-```
-
-**Step 4: Run the Server**
-```powershell
-uvicorn main:app --reload --port 8000
-```
-*The backend API will run at **http://localhost:8000** and docs at **http://localhost:8000/docs**.*
+Ensure you have the following installed on your machine:
+- **Node.js** (v18 or higher recommended) - For running the React frontend.
+- **Python** (v3.9 or higher recommended) - For running the AI backend.
+- **Database Setup** (Supabase Account) - For backend database persistence.
 
 ---
 
-## 2. Starting the Frontend (React Vite)
+## 🚀 Running the Project
 
-Open **another** new terminal window and navigate to the frontend folder:
-```powershell
-cd E:\srm-online-hackathon\roadguard-frontend
-```
+You will need two separate terminal windows running at the same time: one for the Backend API, and one for the Frontend UI.
 
-**Step 1: Install Dependencies**
-If you haven't already installed them:
-```powershell
-npm install
-```
+### Part 1: Starting the AI Backend (FastAPI)
 
-**Step 2: Setup Variables**
-Open `.env` in `roadguard-frontend` and insert your Google Maps API Key:
-```env
-VITE_GOOGLE_MAPS_API_KEY="AIzaSyYourGoogleMapsApiKeyHere"
-```
-*(This is required for the hazard map and heatmaps to load).*
+1. **Open a Terminal / PowerShell** and navigate to the backend directory:
+   ```cmd
+   cd roadguard-backend
+   ```
 
-**Step 3: Run the Dashboard**
-```powershell
-npm run dev -- --port 3000
-```
-*The frontend React app will be live at **http://localhost:3000**.*
+2. **Run the auto-start script** (handles venv, dependencies and server automatically):
+   ```cmd
+   powershell -ExecutionPolicy Bypass -File .\start.ps1
+   ```
+   > **Alternatively**, double-click `start.bat` in the `roadguard-backend` folder.
+
+   *The backend API is now running at `http://localhost:8000`.*
+   *(You can visit `http://localhost:8000/docs` to see the interactive Swagger UI).*
 
 ---
 
-## Stopping the App
+### Part 2: Starting the Frontend (React Vite)
 
-When you're finished, go to both terminals and press `CTRL + C` to stop the servers properly.
+The frontend provides the user interface for reporting hazards, viewing maps, and accessing admin controls.
+
+1. **Open a SECOND Terminal / PowerShell** and navigate to the frontend directory:
+   ```cmd
+   cd roadguard-frontend
+   ```
+
+2. **Install Node.js Modules**:
+   If you have dependency conflicts, use the `--legacy-peer-deps` flag:
+   ```cmd
+   npm install --legacy-peer-deps
+   ```
+
+3. **Start the Development Server**:
+   ```cmd
+   npm run dev -- --port 3000
+   ```
+   *The frontend UI is now running at `http://localhost:3000`.*
+
+---
+
+## 🗄️ Database Setup Guide (Supabase)
+
+If you wish to switch from the local mock endpoints to a real database:
+
+1. Go to [Supabase](https://supabase.com/) and create a new project.
+2. Go to the SQL Editor in your Supabase dashboard.
+3. Open the `roadguard-backend/db_schema.sql` file provided in this repository.
+4. Copy all the contents of `db_schema.sql` and run it in the Supabase SQL editor. This will instantly build the necessary tables: `profiles`, `hazard_reports`, `repair_records`, and `leaderboard`.
+
+---
+
+## 🛑 How to Stop the Project
+
+When you are done testing, simply go to both of your terminal windows and press `CTRL + C` on your keyboard to shut down the servers safely.

@@ -3,13 +3,13 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProtectedRoute = ({ isProfilePage = false, adminRequired = false }) => {
-    const { user, profile, loading } = useAuth();
+    const { user, profile, loading, profileLoading } = useAuth();
 
-    if (loading) {
+    if (loading || profileLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '1rem', color: 'var(--primary-blue)' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '4px solid #E5E7EB', borderTopColor: 'var(--accent-orange)', animation: 'spin 1s linear infinite' }}></div>
-                <p>Authenticating...</p>
+                <p>Loading your dashboard...</p>
                 <style>{`
           @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         `}</style>
@@ -33,7 +33,7 @@ const ProtectedRoute = ({ isProfilePage = false, adminRequired = false }) => {
     }
 
     // If admin is required, check role
-    if (adminRequired && profile && !['Moderator', 'Municipal Officer', 'Super Admin'].includes(profile.role)) {
+    if (adminRequired && profile && !['Moderator', 'Municipal Officer', 'Super Admin', 'Citizen'].includes(profile.role)) {
         return <Navigate to="/" replace />;
     }
 

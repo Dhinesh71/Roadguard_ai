@@ -4,11 +4,13 @@ import { Trophy, ShieldCheck, MapPin } from 'lucide-react';
 
 const Leaderboard = () => {
     const [leaders, setLeaders] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/leaderboard')
-            .then(res => setLeaders(res.data))
-            .catch(err => console.error(err));
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/leaderboard`)
+            .then(res => setLeaders(Array.isArray(res.data) ? res.data : []))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, []);
 
     return (
@@ -42,7 +44,14 @@ const Leaderboard = () => {
                         </div>
                     </li>
                 ))}
-                {leaders.length === 0 && <li style={{ padding: '2rem', textAlign: 'center' }}>Loading Leaderboard...</li>}
+                {loading ? (
+                    <li style={{ padding: '2rem', textAlign: 'center', color: '#64748B' }}>Loading Top Contributors...</li>
+                ) : leaders.length === 0 ? (
+                    <li style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+                        <Trophy size={48} style={{ color: '#E2E8F0', marginBottom: '1rem' }} />
+                        <p>No contributors yet. Report the first hazard to take the #1 spot!</p>
+                    </li>
+                ) : null}
             </ul>
         </div>
     );

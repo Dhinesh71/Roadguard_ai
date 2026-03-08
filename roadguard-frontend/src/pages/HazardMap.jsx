@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
@@ -42,17 +42,35 @@ const getMarkerIcon = (severity) => {
 };
 
 // Center on Chennai, Tamil Nadu
-const center = [13.0827, 80.2707];
+const defaultCenter = [13.0827, 80.2707];
+
+const MapController = ({ targetCenter }) => {
+    const map = useMap();
+    useEffect(() => {
+        if (targetCenter) {
+            map.flyTo(targetCenter, 15, { animate: true, duration: 1.5 });
+        }
+    }, [targetCenter, map]);
+    return null;
+};
 
 const HazardMap = () => {
     const [hazards, setHazards] = useState([]);
     const [selectedHazard, setSelectedHazard] = useState(null);
+    const [targetLocation, setTargetLocation] = useState(null);
+
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Fetch hazards from backend
-        axios.get('http://localhost:8000/api/hazards')
-            .then(res => setHazards(res.data))
-            .catch(err => console.error(err));
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazards`)
+            .then(res => {
+                const data = Array.isArray(res.data) ? res.data : [];
+                // Filter out 'Resolved' hazards from public view
+                setHazards(data.filter(h => h.status !== 'Resolved'));
+            })
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, []);
 
     return (
@@ -63,20 +81,34 @@ const HazardMap = () => {
                     Monitoring road infrastructure in real-time. Wait for repairs to confirm.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {hazards.map((h, i) => (
-                        <div key={i} style={{ padding: '0.5rem', background: '#F8F9FA', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 600 }}>{h.hazard_type}</span>
-                            <span className={`badge badge-${h.severity_level.toLowerCase()}`}>{h.severity_level}</span>
-                        </div>
-                    ))}
+                    {loading ? (
+                        <p style={{ color: '#64748B', textAlign: 'center', padding: '1rem' }}>Loading hazards...</p>
+                    ) : hazards.length === 0 ? (
+                        <p style={{ color: '#64748B', textAlign: 'center', padding: '1rem' }}>No hazards reported yet.</p>
+                    ) : (
+                        hazards.map((h, i) => (
+                            <div
+                                key={i}
+                                onClick={() => setTargetLocation([h.latitude, h.longitude])}
+                                style={{ padding: '0.75rem 0.5rem', background: '#F8F9FA', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', borderLeft: '3px solid transparent', transition: '0.2s' }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.borderLeftColor = 'var(--accent-orange)'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = '#F8F9FA'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
+                                title="Click to view on map"
+                            >
+                                <span style={{ fontWeight: 600 }}>{h.hazard_type}</span>
+                                <span className={`badge badge-${(h.severity_level || 'low').toLowerCase()}`}>{h.severity_level}</span>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 
             <MapContainer
-                center={center}
+                center={defaultCenter}
                 zoom={12}
                 style={{ width: '100%', height: '100%', borderRadius: '16px', zIndex: 1 }}
             >
+                <MapController targetCenter={targetLocation} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

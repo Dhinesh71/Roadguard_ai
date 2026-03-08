@@ -64,8 +64,7 @@ const ProfileCreate = () => {
                 total_reports: 0,
                 verified_reports: 0,
                 total_points: 0,
-                role: 'Citizen',
-                created_at: new Date()
+                role: 'Citizen'
             };
 
             const { error: dbError } = await supabase.from('profiles').insert([profileData]);
@@ -90,11 +89,12 @@ const ProfileCreate = () => {
             // Update Global State
             setProfile(profileData);
 
-            // Redirect to Main Dashboard
-            navigate('/');
+            // Redirect to Main Dashboard (Hard refresh to ensure AuthContext syncs smoothly)
+            window.location.href = '/';
 
         } catch (err) {
-            setError(err.message);
+            console.error("Profile Creation Error Details:", err);
+            setError(err?.message || "An unexpected error occurred. Check browser console.");
         } finally {
             setLoading(false);
         }
