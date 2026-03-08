@@ -54,6 +54,8 @@ const MapController = ({ targetCenter }) => {
     return null;
 };
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const HazardMap = () => {
     const [hazards, setHazards] = useState([]);
     const [selectedHazard, setSelectedHazard] = useState(null);
@@ -63,7 +65,7 @@ const HazardMap = () => {
 
     useEffect(() => {
         // Fetch hazards from backend
-        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazards`)
+        axios.get(`${API_URL}/api/hazards`)
             .then(res => {
                 const data = Array.isArray(res.data) ? res.data : [];
                 // Filter out 'Resolved' hazards from public view

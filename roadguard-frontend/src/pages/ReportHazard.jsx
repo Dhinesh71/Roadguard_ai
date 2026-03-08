@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Camera, MapPin, Upload } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const ReportHazard = () => {
     const { user, profile, setProfile } = useAuth();
     const [file, setFile] = useState(null);
@@ -53,7 +55,7 @@ const ReportHazard = () => {
         formData.append('road_type', 'local');
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazard/report`, formData, {
+            const response = await axios.post(`${API_URL}/api/hazard/report`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             console.log(response.data);

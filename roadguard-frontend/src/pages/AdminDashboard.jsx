@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ShieldAlert, BarChart3, TrendingUp } from 'lucide-react';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
 const AdminDashboard = () => {
     const [hazards, setHazards] = useState([]);
     const [predictions, setPredictions] = useState([]);
@@ -12,8 +14,8 @@ const AdminDashboard = () => {
             setLoading(true);
             try {
                 const [hazardRes, riskRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazards`),
-                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/predict/risk`),
+                    axios.get(`${API_URL}/api/hazards`),
+                    axios.get(`${API_URL}/api/predict/risk`),
                 ]);
                 setHazards(Array.isArray(hazardRes.data) ? hazardRes.data : []);
                 setPredictions(Array.isArray(riskRes.data) ? riskRes.data : []);
@@ -116,7 +118,7 @@ const AdminDashboard = () => {
                                                     onChange={async (e) => {
                                                         const newStatus = e.target.value;
                                                         try {
-                                                            await axios.patch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazards/${h.id}`, { status: newStatus });
+                                                            await axios.patch(`${API_URL}/api/hazards/${h.id}`, { status: newStatus });
                                                             // Update local state without refreshing map
                                                             setHazards(prev => prev.map(item => item.id === h.id ? { ...item, status: newStatus } : item));
                                                         } catch (err) {
