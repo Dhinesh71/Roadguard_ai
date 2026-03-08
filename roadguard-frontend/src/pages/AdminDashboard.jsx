@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { ShieldAlert, BarChart3, TrendingUp } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
@@ -15,7 +16,10 @@ const AdminDashboard = () => {
             try {
                 const [hazardRes, riskRes] = await Promise.all([
                     supabase.from('hazard_reports').select('*').order('created_at', { ascending: false }),
-                    supabase.from('road_health_scores').select('*').limit(10),
+                    axios.get(`${API_URL}/api/predict/risk`).catch(async () => {
+                        console.warn("AI backend unreachable, falling back to static DB scores");
+                        return await supabase.from('road_health_scores').select('*').limit(10);
+                    }),
                 ]);
                 setHazards(Array.isArray(hazardRes.data) ? hazardRes.data : []);
                 setPredictions(Array.isArray(riskRes.data) ? riskRes.data : []);
