@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { ShieldAlert, BarChart3, TrendingUp } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
@@ -14,8 +14,8 @@ const AdminDashboard = () => {
             setLoading(true);
             try {
                 const [hazardRes, riskRes] = await Promise.all([
-                    axios.get(`${API_URL}/api/hazards`),
-                    axios.get(`${API_URL}/api/predict/risk`),
+                    supabase.from('hazard_reports').select('*').order('created_at', { ascending: false }),
+                    supabase.from('road_health_scores').select('*').limit(10),
                 ]);
                 setHazards(Array.isArray(hazardRes.data) ? hazardRes.data : []);
                 setPredictions(Array.isArray(riskRes.data) ? riskRes.data : []);
@@ -118,7 +118,17 @@ const AdminDashboard = () => {
                                                     onChange={async (e) => {
                                                         const newStatus = e.target.value;
                                                         try {
-                                                            await axios.patch(`${API_URL}/api/hazards/${h.id}`, { status: newStatus });
+                                                            const updateRes = await supabase.from('hazard_reports').update({ status: newStatus }).eq('id', h.id).select();
+
+                                                            // If marked resolved, update user verified count
+                                                            if (newStatus === 'Resolved' && updateRes.data && updateRes.data[0]?.reporter_id) {
+                                                                const reporterId = updateRes.data[0].reporter_id;
+                                                                const pRes = await supabase.from('profiles').select('verified_reports').eq('id', reporterId).single();
+                                                                if (pRes.data) {
+                                                                    await supabase.from('profiles').update({ verified_reports: (pRes.data.verified_reports || 0) + 1 }).eq('id', reporterId);
+                                                                }
+                                                            }
+
                                                             // Update local state without refreshing map
                                                             setHazards(prev => prev.map(item => item.id === h.id ? { ...item, status: newStatus } : item));
                                                         } catch (err) {

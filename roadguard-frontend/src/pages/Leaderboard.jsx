@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Trophy, ShieldCheck, MapPin } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
@@ -9,7 +9,7 @@ const Leaderboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/leaderboard`)
+        supabase.from('leaderboard').select('*').order('total_points', { ascending: false }).limit(10)
             .then(res => setLeaders(Array.isArray(res.data) ? res.data : []))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));

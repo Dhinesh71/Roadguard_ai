@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import axios from 'axios';
+import { supabase } from '../supabaseClient';
 
 // Fix for default marker icons in React-Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -64,8 +64,8 @@ const HazardMap = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch hazards from backend
-        axios.get(`${API_URL}/api/hazards`)
+        // Fetch hazards from Supabase directly
+        supabase.from('hazard_reports').select('*').order('created_at', { ascending: false })
             .then(res => {
                 const data = Array.isArray(res.data) ? res.data : [];
                 // Filter out 'Resolved' hazards from public view
