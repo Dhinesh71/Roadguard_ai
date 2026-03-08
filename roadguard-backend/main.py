@@ -31,18 +31,26 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+from PIL import Image
+
 # ── YOLO (optional — requires custom-trained model for road hazards) ──────────
 YOLO_AVAILABLE = False
-try:
-    from ultralytics import YOLO
-    import numpy as np
-    from PIL import Image
-    # Fallback to standard yolov8n.pt for stability on Render deployment
-    yolo_model = YOLO("yolov8n.pt")
-    YOLO_AVAILABLE = True
-    print("✅ YOLOv8n model loaded.")
-except Exception as e:
-    print(f"⚠️  YOLO not available: {e}")
+yolo_model = None
+yolo_initialized = False
+
+def init_yolo():
+    global YOLO_AVAILABLE, yolo_model, yolo_initialized
+    if not yolo_initialized:
+        yolo_initialized = True
+        try:
+            print("⏳ Lazy loading PyTorch & YOLOv8n to save RAM...")
+            from ultralytics import YOLO
+            import numpy as np
+            yolo_model = YOLO("yolov8n.pt")
+            YOLO_AVAILABLE = True
+            print("✅ YOLOv8n model loaded.")
+        except Exception as e:
+            print(f"⚠️  YOLO not available: {e}")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -54,6 +62,7 @@ def detect_hazard_from_image(image_bytes: bytes) -> tuple[str, float, float, byt
     Returns (hazard_type, confidence, image_area_fraction, annotated_image_bytes).
     Uses YOLO if available; falls back to rule-based analysis on image metadata.
     """
+    init_yolo()
     annotated_bytes = image_bytes
     if YOLO_AVAILABLE:
         try:
