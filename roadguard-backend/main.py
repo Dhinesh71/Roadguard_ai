@@ -44,6 +44,9 @@ def init_yolo():
         yolo_initialized = True
         try:
             print("⏳ Lazy loading PyTorch & YOLOv8n to save RAM...")
+            import torch
+            # Critical for 512MB RAM Linux Servers to avoid freezing
+            torch.set_num_threads(1) 
             from ultralytics import YOLO
             import numpy as np
             yolo_model = YOLO("yolov8n.pt")
