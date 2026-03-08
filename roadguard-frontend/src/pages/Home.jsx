@@ -17,6 +17,9 @@ const Home = () => {
                     <Link to="/map" className="btn btn-outline hero-btn">
                         View Hazard Map
                     </Link>
+                    <Link to="/tnrg-control-panel" className="btn btn-outline hero-btn" style={{ borderColor: '#38BDF8', color: '#38BDF8', background: 'rgba(56, 189, 248, 0.1)' }}>
+                        Govt / Admin Login
+                    </Link>
                 </div>
             </section>
 
