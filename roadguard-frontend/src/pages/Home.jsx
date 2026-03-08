@@ -10,11 +10,11 @@ const Home = () => {
                 <p className="hero-subtitle">
                     Join the Tamil Nadu community in making our roads safer. Use AI to report potholes, track repairs, and ensure contractor accountability.
                 </p>
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <div className="hero-buttons">
                     <Link to="/report" className="btn btn-accent" style={{ fontSize: '1.25rem' }}>
                         Report a Hazard <ArrowRight size={20} />
                     </Link>
-                    <Link to="/map" className="btn btn-outline" style={{ background: 'rgba(255,255,255,0.1)', borderColor: 'white', color: 'white', fontSize: '1.25rem' }}>
+                    <Link to="/map" className="btn btn-outline hero-btn">
                         View Hazard Map
                     </Link>
                 </div>

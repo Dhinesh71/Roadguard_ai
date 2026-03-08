@@ -38,7 +38,7 @@ const AdminDashboard = () => {
             </h2>
 
             {/* Real Stats computed from DB */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem', marginBottom: '3rem' }}>
+            <div className="dashboard-stats" style={{ marginBottom: '3rem' }}>
                 <div className="card" style={{ borderLeft: '4px solid #EF4444' }}>
                     <h4 style={{ color: '#EF4444', marginBottom: '0.5rem' }}>High Priority</h4>
                     <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{loading ? '...' : highPriority}</p>
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
+            <div className="dashboard-grid">
                 {/* Live Hazard Reports Table */}
                 <div className="card">
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: 'var(--primary-blue)' }}>
@@ -72,68 +72,70 @@ const AdminDashboard = () => {
                             No hazard reports yet. Citizens can submit reports using the "Report Hazard" button.
                         </p>
                     ) : (
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '2px solid #E5E7EB', color: 'var(--text-muted)' }}>
-                                    <th style={{ padding: '1rem', fontWeight: 600 }}>Image</th>
-                                    <th style={{ padding: '1rem', fontWeight: 600 }}>Type</th>
-                                    <th style={{ padding: '1rem', fontWeight: 600 }}>Severity</th>
-                                    <th style={{ padding: '1rem', fontWeight: 600 }}>Status</th>
-                                    <th style={{ padding: '1rem', fontWeight: 600 }}>Est. Cost</th>
-                                    <th style={{ padding: '1rem', fontWeight: 600 }}>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {hazards.map((h, i) => (
-                                    <tr key={h.id || i} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', background: '#E2E8F0' }}>
-                                                {h.image_url ? (
-                                                    <img src={h.image_url} alt={h.hazard_type} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#64748B' }}>No IMG</div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>{h.hazard_type}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span className={`badge badge-${(h.severity_level || 'low').toLowerCase()}`}>
-                                                {h.severity_level} {h.severity_score ? `(${h.severity_score}/10)` : ''}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span style={{ fontSize: '0.9rem', fontWeight: 500, color: h.status === 'Resolved' ? '#10B981' : h.status === 'Pending' ? '#F59E0B' : 'var(--text-muted)' }}>
-                                                {h.status}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>₹{h.estimated_cost ? h.estimated_cost.toLocaleString() : '—'}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <select
-                                                className="input-field"
-                                                style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem', width: 'auto', display: 'inline-block' }}
-                                                value={h.status}
-                                                onChange={async (e) => {
-                                                    const newStatus = e.target.value;
-                                                    try {
-                                                        await axios.patch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazards/${h.id}`, { status: newStatus });
-                                                        // Update local state without refreshing map
-                                                        setHazards(prev => prev.map(item => item.id === h.id ? { ...item, status: newStatus } : item));
-                                                    } catch (err) {
-                                                        console.error("Failed to update status", err);
-                                                        alert("Error updating status");
-                                                    }
-                                                }}
-                                            >
-                                                <option value="Pending">Pending</option>
-                                                <option value="Inspection">Inspection</option>
-                                                <option value="Repair Scheduled">Repair Scheduled</option>
-                                                <option value="Resolved">Resolved</option>
-                                            </select>
-                                        </td>
+                        <div className="table-container">
+                            <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '2px solid #E5E7EB', color: 'var(--text-muted)' }}>
+                                        <th style={{ padding: '1rem', fontWeight: 600 }}>Image</th>
+                                        <th style={{ padding: '1rem', fontWeight: 600 }}>Type</th>
+                                        <th style={{ padding: '1rem', fontWeight: 600 }}>Severity</th>
+                                        <th style={{ padding: '1rem', fontWeight: 600 }}>Status</th>
+                                        <th style={{ padding: '1rem', fontWeight: 600 }}>Est. Cost</th>
+                                        <th style={{ padding: '1rem', fontWeight: 600 }}>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {hazards.map((h, i) => (
+                                        <tr key={h.id || i} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                                            <td style={{ padding: '1rem' }}>
+                                                <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', background: '#E2E8F0' }}>
+                                                    {h.image_url ? (
+                                                        <img src={h.image_url} alt={h.hazard_type} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#64748B' }}>No IMG</div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>{h.hazard_type}</td>
+                                            <td style={{ padding: '1rem' }}>
+                                                <span className={`badge badge-${(h.severity_level || 'low').toLowerCase()}`}>
+                                                    {h.severity_level} {h.severity_score ? `(${h.severity_score}/10)` : ''}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 500, color: h.status === 'Resolved' ? '#10B981' : h.status === 'Pending' ? '#F59E0B' : 'var(--text-muted)' }}>
+                                                    {h.status}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '1rem' }}>₹{h.estimated_cost ? h.estimated_cost.toLocaleString() : '—'}</td>
+                                            <td style={{ padding: '1rem' }}>
+                                                <select
+                                                    className="input-field"
+                                                    style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem', width: 'auto', display: 'inline-block' }}
+                                                    value={h.status}
+                                                    onChange={async (e) => {
+                                                        const newStatus = e.target.value;
+                                                        try {
+                                                            await axios.patch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/hazards/${h.id}`, { status: newStatus });
+                                                            // Update local state without refreshing map
+                                                            setHazards(prev => prev.map(item => item.id === h.id ? { ...item, status: newStatus } : item));
+                                                        } catch (err) {
+                                                            console.error("Failed to update status", err);
+                                                            alert("Error updating status");
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Inspection">Inspection</option>
+                                                    <option value="Repair Scheduled">Repair Scheduled</option>
+                                                    <option value="Resolved">Resolved</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </div>
 

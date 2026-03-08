@@ -74,7 +74,7 @@ const HazardMap = () => {
     }, []);
 
     return (
-        <div className="card" style={{ padding: '0', height: '70vh', position: 'relative' }}>
+        <div className="card map-container" style={{ padding: '0', height: '70vh' }}>
             <div className="map-sidebar">
                 <h3 style={{ marginBottom: '1rem', color: 'var(--primary-blue)' }}>Live Hazard Intel</h3>
                 <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
