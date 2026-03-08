@@ -37,11 +37,10 @@ try:
     from ultralytics import YOLO
     import numpy as np
     from PIL import Image
-    # YOLO26n: The latest NMS-free architecture (Jan 2026).
-    # Up to 43% faster CPU inference and explicitly optimized for small objects (potholes).
-    yolo_model = YOLO("yolo26n.pt")
+    # Fallback to standard yolov8n.pt for stability on Render deployment
+    yolo_model = YOLO("yolov8n.pt")
     YOLO_AVAILABLE = True
-    print("✅ YOLO26n model loaded.")
+    print("✅ YOLOv8n model loaded.")
 except Exception as e:
     print(f"⚠️  YOLO not available: {e}")
 
